@@ -1,0 +1,64 @@
+<div>
+    <div>Donation Contract</div>
+    <br/>
+    <input id='contractaddress' placeholder='contract address'></intput>
+    <br/>
+    <div>
+        <br/>
+        <input id='fromGive' placeholder='from' ></intput><input placeholder='amount' id='valueGive'></intput><button id="fallbackbtn" onclick="donate()">give</button>
+        <br/>
+        <br/>
+        <input id='fromMoveFund' placeholder='from' ></intput><input id='moveFundTo' placeholder='move to' ></intput><input id='amountToMove' placeholder='amount' ></intput><button id="movefundbtn" onclick="movefund()">moveFund</button>
+        <br/>
+        <br/>
+        <div id='wait' ></div>
+    </div>
+    <br/>
+    <br/>
+    <div id='log'>
+    </div>
+</div>
+
+<script type="text/javascript">
+function donate () {
+    var donation = contractspec.at(document.getElementById('contractaddress').value)
+    donation.donate({
+        from: document.getElementById('fromGive').value,
+        value: document.getElementById('valueGive').value
+    }, function (error, txHash) {
+        tryTillResponse(txHash, function (error, receipt) {
+            alert('done ' + txHash)
+        })
+    })
+}
+
+function movefund () {
+    var donation = contractspec.at(document.getElementById('contractaddress').value)
+    donation.moveFund(
+        document.getElementById('moveFundTo').value,
+        document.getElementById('amountToMove').value,
+        function (error, txHash) {
+            tryTillResponse(txHash, function (error, receipt) {
+                alert('done ' + txHash)
+            })
+        })
+}
+
+var contractspec = web3.eth.contract([{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_amount","type":"uint256"}],"name":"moveFund","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"donate","outputs":[],"payable":true,"type":"function"},{"inputs":[],"payable":false,"type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"_to","type":"address"},{"indexed":false,"name":"_amount","type":"uint256"}],"name":"fundMoved","type":"event"}]);
+
+function tryTillResponse (txhash, done) {
+    document.getElementById('wait').innerHTML = 'waiting for the transaction to be mined ...'
+    web3.eth.getTransactionReceipt(txhash, function (err, result) {
+        if (!err && !result) {
+            // Try again with a bit of delay
+            setTimeout(function () { tryTillResponse(txhash, done) }, 500)
+        } else {
+            document.getElementById('wait').innerHTML = ''
+            var log = document.createElement("div")
+            log.innerHTML = JSON.stringify(result)
+            document.getElementById('log').appendChild(log)
+            done(err,result)
+        }
+    })
+}
+</script>
