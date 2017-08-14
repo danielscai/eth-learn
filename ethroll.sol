@@ -1238,7 +1238,7 @@ contract DSSafeAddSub {
         return (a + b >= a);
     }
     function safeAdd(uint a, uint b) internal returns (uint) {
-        if (!safeToAdd(a, b)) revert;
+        if (!safeToAdd(a, b)) throw;
         return a + b;
     }
 
@@ -1247,7 +1247,7 @@ contract DSSafeAddSub {
     }
 
     function safeSub(uint a, uint b) internal returns (uint) {
-        if (!safeToSubtract(a, b)) revert;
+        if (!safeToSubtract(a, b)) throw;
         return a - b;
     } 
 }
@@ -1262,7 +1262,7 @@ contract Etheroll is usingOraclize, DSSafeAddSub {
      * checks player profit, bet size and player number is within range
     */
     modifier betIsValid(uint _betSize, uint _playerNumber) {      
-        if(((((_betSize * (100-(safeSub(_playerNumber,1)))) / (safeSub(_playerNumber,1))+_betSize))*houseEdge/houseEdgeDivisor)-_betSize > maxProfit || _betSize < minBet || _playerNumber < minNumber || _playerNumber > maxNumber) revert;        
+        if(((((_betSize * (100-(safeSub(_playerNumber,1)))) / (safeSub(_playerNumber,1))+_betSize))*houseEdge/houseEdgeDivisor)-_betSize > maxProfit || _betSize < minBet || _playerNumber < minNumber || _playerNumber > maxNumber) throw;        
         _;
     }
 
@@ -1270,7 +1270,7 @@ contract Etheroll is usingOraclize, DSSafeAddSub {
      * checks game is currently active
     */
     modifier gameIsActive {
-        if(gamePaused == true) revert;
+        if(gamePaused == true) throw;
         _;
     }    
 
@@ -1278,7 +1278,7 @@ contract Etheroll is usingOraclize, DSSafeAddSub {
      * checks payouts are currently active
     */
     modifier payoutsAreActive {
-        if(payoutsPaused == true) revert;
+        if(payoutsPaused == true) throw;
         _;
     }    
 
@@ -1286,7 +1286,7 @@ contract Etheroll is usingOraclize, DSSafeAddSub {
      * checks only Oraclize address is calling
     */
     modifier onlyOraclize {
-        if (msg.sender != oraclize_cbAddress()) revert;
+        if (msg.sender != oraclize_cbAddress()) throw;
         _;
     }
 
@@ -1294,7 +1294,7 @@ contract Etheroll is usingOraclize, DSSafeAddSub {
      * checks only owner address is calling
     */
     modifier onlyOwner {
-         if (msg.sender != owner) revert;
+         if (msg.sender != owner) throw;
          _;
     }
 
@@ -1302,7 +1302,7 @@ contract Etheroll is usingOraclize, DSSafeAddSub {
      * checks only treasury address is calling
     */
     modifier onlyTreasury {
-         if (msg.sender != treasury) revert;
+         if (msg.sender != treasury) throw;
          _;
     }    
 
@@ -1422,7 +1422,7 @@ contract Etheroll is usingOraclize, DSSafeAddSub {
         /* safely increase maxPendingPayouts liability - calc all pending payouts under assumption they win */
         maxPendingPayouts = safeAdd(maxPendingPayouts, playerProfit[rngId]);
         /* check contract can payout on win */
-        if(maxPendingPayouts >= contractBalance) revert;
+        if(maxPendingPayouts >= contractBalance) throw;
         /* provides accurate numbers for web3 and allows for manual refunds in case of no oraclize __callback */
         LogBet(playerBetId[rngId], playerAddress[rngId], safeAdd(playerBetValue[rngId], playerProfit[rngId]), playerProfit[rngId], playerBetValue[rngId], playerNumber[rngId]);          
 
@@ -1439,7 +1439,7 @@ contract Etheroll is usingOraclize, DSSafeAddSub {
     {  
 
         /* player address mapped to query id does not exist */
-        if (playerAddress[myid]==0x0) revert;
+        if (playerAddress[myid]==0x0) throw;
         
         /* keep oraclize honest by retrieving the serialNumber from random.org result */
         var sl_result = result.toSlice();
@@ -1633,7 +1633,7 @@ contract Etheroll is usingOraclize, DSSafeAddSub {
         onlyOwner
     {
         /* restrict each bet to a maximum profit of 1% contractBalance */
-        if(newMaxProfitAsPercent > 10000) revert;
+        if(newMaxProfitAsPercent > 10000) throw;
         maxProfitAsPercentOfHouse = newMaxProfitAsPercent;
         setMaxProfit();
     }
@@ -1653,7 +1653,7 @@ contract Etheroll is usingOraclize, DSSafeAddSub {
         contractBalance = safeSub(contractBalance, amount);     
         /* update max profit */
         setMaxProfit();
-        if(!sendTo.send(amount)) revert;
+        if(!sendTo.send(amount)) throw;
         LogOwnerTransfer(sendTo, amount); 
     }
 
@@ -1671,7 +1671,7 @@ contract Etheroll is usingOraclize, DSSafeAddSub {
         /* safely reduce pendingPayouts by playerProfit[rngId] */
         maxPendingPayouts = safeSub(maxPendingPayouts, originalPlayerProfit);
         /* send refund */
-        if(!sendTo.send(originalPlayerBetValue)) revert;
+        if(!sendTo.send(originalPlayerBetValue)) throw;
         /* log refunds */
         LogRefund(originalPlayerBetId, sendTo, originalPlayerBetValue);        
     }    
