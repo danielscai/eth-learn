@@ -1,0 +1,2 @@
+#!/bin/bash 
+geth --datadir ~/datadir/ --nodiscover --rpc console

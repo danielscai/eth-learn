@@ -1,0 +1,4 @@
+
+eth.accounts
+personal.newAccount('123')
+eth.getBalance(eth.coinbase)
