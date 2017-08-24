@@ -1,2 +1,2 @@
 #!/bin/bash 
-geth --datadir ~/datadir/ --nodiscover --rpc console --rpccorsdomain "*"
+geth --datadir ~/datadir/ --nodiscover --rpc  --rpcaddr "0.0.0.0" --rpccorsdomain "*" console
