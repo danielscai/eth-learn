@@ -39,10 +39,20 @@ contract CloudCrowdFund {
         }
     }
 
-    function Lottery()  {
-        seller = msg.sender;
-        value = msg.value / 2;
-        require((2 * value) == msg.value);
+    function Lottery() {
+        betStatus = 'inactive';
+         
+        var[] votingPoolArray;
+        for (uint i = 0; i < votingPool.length ; i++){
+            votingPoolArray += votingPool[i];
+        }
+
+
+             
+        // reset;
+        currentTotal = 0;
+        betStatus = 'active';
+        
     }
 
 }
