@@ -6,7 +6,7 @@ contract CloudCrowdFund {
     uint public minBet = 0.01;
     uint public unitBet = 0.01;
     uint public maxBet = 0.03;
-    uint public betAmount = 10;
+    uint public betAmount = 3;
     uint public lotteryValue = unitBet * betAmount;
     uint public progress = 0;
     uint public contractBenifits = 0.02
@@ -16,4 +16,24 @@ contract CloudCrowdFund {
     var[] lotteryTickets;
     mapping(address => uint) public betRecords;
     mapping(address => lotteryTickets) public votingPool;
+
+    function CloudCrowdFund() {
+        seller = msg.sender;
+        value = msg.value / 2;
+        require((2 * value) == msg.value);
+    }
+
+    function Purchase() payable {
+        seller = msg.sender;
+        value = msg.value / 2;
+        require((2 * value) == msg.value);
+    }
+
+    function Lottery()  {
+        seller = msg.sender;
+        value = msg.value / 2;
+        require((2 * value) == msg.value);
+    }
+
 }
+
