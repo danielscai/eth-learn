@@ -12,21 +12,31 @@ contract CloudCrowdFund {
     uint public contractBenifits = 0.02
     var public status = 'open';
     var public betStatus = 'active';
+    address public owner;
    
     var[] lotteryTickets;
     mapping(address => uint) public betRecords;
     mapping(address => lotteryTickets) public votingPool;
 
     function CloudCrowdFund() {
-        seller = msg.sender;
-        value = msg.value / 2;
-        require((2 * value) == msg.value);
+        owner = msg.sender;
     }
 
     function Purchase() payable {
-        seller = msg.sender;
-        value = msg.value / 2;
-        require((2 * value) == msg.value);
+        lotteryCount = msg.value / unitBet
+        // todo: check msg.value is valid
+        
+        var[] lottery;
+        byte32 hash = sha3(123, msg.sender);
+        lottery.push(hash);
+        votingPool[msg.sender] = lottery;
+
+        historyTotal += msg.value;
+        currentTotal += msg.value;
+
+        if (currentTotal == lotteryValue ){
+            Lottery();
+        }
     }
 
     function Lottery()  {
