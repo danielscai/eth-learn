@@ -14,9 +14,8 @@ contract CloudCrowdFund {
     var public betStatus = 'active';
     address public owner;
    
-    var[] lotteryTickets;
     mapping(address => uint) public betRecords;
-    mapping(address => lotteryTickets) public votingPool;
+    mapping(var => address) public votingPool;
 
     function CloudCrowdFund() {
         owner = msg.sender;
@@ -26,10 +25,12 @@ contract CloudCrowdFund {
         lotteryCount = msg.value / unitBet
         // todo: check msg.value is valid
         
-        var[] lottery;
-        byte32 hash = sha3(123, msg.sender);
-        lottery.push(hash);
-        votingPool[msg.sender] = lottery;
+
+        //generate n ticket for msg.sender
+        for (uint i = 0 ; i< lotteryCount; i++){
+            byte32 hash = sha3(123, msg.sender);
+            votingPool[hash] = msg.sender;
+        }
 
         historyTotal += msg.value;
         currentTotal += msg.value;
@@ -42,13 +43,13 @@ contract CloudCrowdFund {
     function Lottery() {
         betStatus = 'inactive';
          
-        var[] votingPoolArray;
-        for (uint i = 0; i < votingPool.length ; i++){
-            votingPoolArray += votingPool[i];
-        }
+        uint random_number = uint(block.blockhash(block.number-1))%10 + 1;
 
+        var winerAddress = votingPool[random_number];
 
-             
+        // send 98% total 
+        winerAddress.transfer(currentTotal * ( 1 - contractBenifits);
+
         // reset;
         currentTotal = 0;
         betStatus = 'active';
